@@ -144,11 +144,12 @@ namespace FSM {
 		) const {
 			auto stateIter = States.find(CurState);
 			bool validState = stateIter != States.end();
+			auto acState = AcceptanceStates.find(CurState);
 			State const& currentState = stateIter->second;
 			if(inputLength == 0
 					|| (validState && currentState.size() == 0)
+					|| (!validState && acState != AcceptanceStates.end())
 			) {
-				auto acState = AcceptanceStates.find(CurState);
 				if(acState != AcceptanceStates.end()) {
 					return {acState->second, charsMatched};
 				}
@@ -166,7 +167,7 @@ namespace FSM {
 							s,
 							charsMatched + match.second
 						);
-						if(retVal.first != FailState)
+						if(retVal.second != 0)
 							return retVal;
 					}
 				}
