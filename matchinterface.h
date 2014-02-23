@@ -29,6 +29,6 @@ namespace FSM {
 		virtual std::pair<AcceptNameType, uint32_t> Match(
 				MatchDataType* input,
 				uint32_t inputSize
-		) = 0;
+		) const = 0;
 	};
 }

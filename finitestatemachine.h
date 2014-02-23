@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <utility>
+#include <memory>
 
 #include "matchinterface.h"
 #include "matchcharacterrange.h"
@@ -64,11 +65,11 @@ namespace FSM {
 		/**
 		 * \brief Defines the input to trigger a transition.
 		 */
-		typedef MatchCharacterRange<
+		typedef std::shared_ptr<MatchInterface<
 			StateTransitionType,
 		 	AcceptanceNameType,
 		 	FailState
-		> MatchRange;
+		> const> MatchRange;
 
 		/**
 		 * \brief A Transition is a trigger, and a set of targets it leads to.
@@ -123,7 +124,7 @@ namespace FSM {
 		virtual std::pair<AcceptanceNameType, uint32_t> Match(
 			StateTransitionType* input,
 			uint32_t inputSize
-		) override {
+		) const override {
 			return Match(input, inputSize, InitialState, 0);
 		}
 
@@ -140,28 +141,35 @@ namespace FSM {
 			uint32_t inputLength,
 		 	StateNameType CurState,
 			uint32_t charsMatched
-		) {
+		) const {
+			auto stateIter = States.find(CurState);
+			bool validState = stateIter != States.end();
+			auto acState = AcceptanceStates.find(CurState);
+			State const& currentState = stateIter->second;
 			if(inputLength == 0
-					|| States[CurState].size() == 0
+					|| (validState && currentState.size() == 0)
+					|| (!validState && acState != AcceptanceStates.end())
 			) {
-				if(AcceptanceStates.find(CurState)
-						!= AcceptanceStates.end())
-					return {AcceptanceStates[CurState], charsMatched};
+				if(acState != AcceptanceStates.end()) {
+					return {acState->second, charsMatched};
+				}
 				return {FailState, 0};
 			}
-			for(auto cur : States[CurState]) {
-				auto match = cur.first.Match(input, inputLength);
-				if(match.second == 0)
-					continue;
-				for(auto s : cur.second) {
-					auto retVal = Match(
-						input + match.second,
-						inputLength - match.second,
-						s,
-						charsMatched + match.second
-					);
-					if(retVal.first != FailState)
-						return retVal;
+			if(validState) {
+				for(auto cur : currentState) {
+					auto match = cur.first->Match(input, inputLength);
+					if(match.second == 0)
+						continue;
+					for(auto s : cur.second) {
+						auto retVal = Match(
+							input + match.second,
+							inputLength - match.second,
+							s,
+							charsMatched + match.second
+						);
+						if(retVal.second != 0)
+							return retVal;
+					}
 				}
 			}
 			return {FailState, 0};
