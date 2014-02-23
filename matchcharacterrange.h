@@ -36,7 +36,7 @@ namespace FSM {
 		Match(InputDataType* input, uint32_t inputSize) override {
 			if(inputSize == 0
 				|| (
-					(input[0] >= _matchRangeStart && input[1] <= _matchRangeEnd)
+					(input[0] < _matchRangeStart || input[0] > _matchRangeEnd)
 					^ _negate
 				)
 			)
