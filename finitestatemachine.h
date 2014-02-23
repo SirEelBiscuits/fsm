@@ -4,7 +4,8 @@
 #include <vector>
 #include <utility>
 
-#include "fsm/matchinterface.h"
+#include "matchinterface.h"
+#include "matchcharacterrange.h"
 
 namespace FSM {
 	/**
@@ -63,7 +64,11 @@ namespace FSM {
 		/**
 		 * \brief Defines the input to trigger a transition.
 		 */
-		typedef std::pair<StateTransitionType, StateTransitionType> MatchRange;
+		typedef MatchCharacterRange<
+			StateTransitionType,
+		 	AcceptanceNameType,
+		 	FailState
+		> MatchRange;
 
 		/**
 		 * \brief A Transition is a trigger, and a set of targets it leads to.
@@ -145,15 +150,15 @@ namespace FSM {
 				return {FailState, 0};
 			}
 			for(auto cur : States[CurState]) {
-				if(cur.first.first < input[0]
-						|| cur.first.second > input[0])
+				auto match = cur.first.Match(input, inputLength);
+				if(match.second == 0)
 					continue;
 				for(auto s : cur.second) {
 					auto retVal = Match(
-						input + 1,
-						inputLength - 1,
+						input + match.second,
+						inputLength - match.second,
 						s,
-						charsMatched + 1
+						charsMatched + match.second
 					);
 					if(retVal.first != FailState)
 						return retVal;
