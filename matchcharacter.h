@@ -18,11 +18,11 @@ namespace FSM {
 		: public MatchInterface<InputDataType, AcceptNameType, ReturnState> {
 	public:
 		MatchCharacter(InputDataType i)
-			: _matchTarget(i)
+			: _matchCharacter(i)
 		{}
 
 		MatchCharacter(InputDataType i, bool negate)
-			: _matchTarget(i)
+			: _matchCharacter(i)
 			, _negate(negate)
 		{}
 
@@ -33,7 +33,7 @@ namespace FSM {
 		std::pair<AcceptNameType, uint32_t>
 		Match(InputDataType* input, uint32_t inputSize) const override {
 			if(inputSize == 0
-					|| ((_matchTarget != input[0]) ^ _negate))
+					|| ((_matchCharacter != input[0]) ^ _negate))
 				return {ReturnState, 0};
 			return {ReturnState, 1};
 		}

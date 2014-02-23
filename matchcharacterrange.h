@@ -33,7 +33,7 @@ namespace FSM {
 		 * 	otherwise
 		 */
 		std::pair<AcceptNameType, uint32_t>
-		Match(InputDataType* input, uint32_t inputSize) override {
+		Match(InputDataType* input, uint32_t inputSize) const override {
 			if(inputSize == 0
 				|| (
 					(input[0] < _matchRangeStart || input[0] > _matchRangeEnd)
