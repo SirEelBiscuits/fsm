@@ -161,7 +161,7 @@ namespace FSM {
 			if(validState) {
 				for(auto cur : currentState) {
 					auto match = cur.first->Match(input, inputLength);
-					if(match.first != FailState)
+					if(match.first == FailState)
 						continue;
 					for(auto s : cur.second) {
 						auto retVal = Match(
@@ -170,7 +170,7 @@ namespace FSM {
 							s,
 							charsMatched + match.second
 						);
-						if(retVal.second != 0)
+						if(retVal.first != FailState)
 							return retVal;
 					}
 				}
