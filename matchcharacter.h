@@ -15,7 +15,7 @@ namespace FSM {
 		typename InputDataType,
 		typename AcceptNameType,
 		AcceptNameType FailState,
-		AcceptNameType AcceptState,
+		AcceptNameType AcceptState
 	> class MatchCharacter
 		: public MatchInterface<InputDataType, AcceptNameType, FailState> {
 	public:
