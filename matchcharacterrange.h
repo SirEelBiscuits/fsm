@@ -7,14 +7,16 @@ namespace FSM {
 	 * \brief Matches a range of characters
 	 *
 	 * \param AcceptNameType The type of data in Match(foo).fisrt
-	 * \param ReturnState The value of data in Match(foo).first
+	 * \param FailState The value of data in Match(foo).first on match fail.
+	 * \param AcceptState The value of data in Match(foo).first on match.
 	 */
 	template<
 		typename InputDataType,
 		typename AcceptNameType,
-		AcceptNameType ReturnState
+		AcceptNameType FailState,
+		AcceptNameType AcceptState
 	> class MatchCharacterRange
-		: public MatchInterface<InputDataType, AcceptNameType, ReturnState> {
+		: public MatchInterface<InputDataType, AcceptNameType, FailState> {
 	public:
 		MatchCharacterRange(InputDataType start, InputDataType end)
 			: _matchRangeStart(start)
@@ -29,7 +31,7 @@ namespace FSM {
 		{}
 
 		/**
-		 * \returns {ReturnState, 1} on a successful match, {ReturnState, 0}
+		 * \returns {AcceptState, 1} on a successful match, {FailState, 0}
 		 * 	otherwise
 		 */
 		std::pair<AcceptNameType, uint32_t>
@@ -40,8 +42,8 @@ namespace FSM {
 					^ _negate
 				)
 			)
-				return {ReturnState, 0};
-			return {ReturnState, 1};
+				return {FailState, 0};
+			return {AcceptState, 1};
 		}
 
 	private:

@@ -5,7 +5,7 @@
 
 namespace FSM {
 	/**
-	 * \brief Interface class for classis that may be used to match strings
+	 * \brief Interface class for classes that may be used to match strings
 	 *
 	 * \param MatchDataType The type of input the class matches.
 	 * \param AcceptNameType The type of the data returned on a match

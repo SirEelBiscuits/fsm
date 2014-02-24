@@ -22,23 +22,26 @@ namespace FSM {
 	 * To create a state machine, it is recommended that you use a uniform
 	 * 	initialiser like so:
 	 *
-	 * StateMachine<char, char, string, '\0'> fsm {
+	 * StateMachine<char, char, int, 0> fsm {
 	 *  'a', //initial state
 	 * 	{ //states
-	 * 		{ 'a', { {{'a', 'a'}, {'b'}}}},
+	 * 		{ 'a', { {MatchCharacter<char,int,0,1>('a'), {'b'}}}},
 	 * 		{ 'b', {
-	 * 		         {{'a', 'z'}, {'c'}}
-	 * 		         {{'A', 'Z'}, {'d'}}
+	 * 		         {MatchCharacterRange<char,int,0,1>('a', 'z'), {'c'}}
+	 * 		         {MatchCharacterRange<char,int,0,1>('A', 'Z'), {'d'}}
 	 * 		       }
 	 * 		}
 	 * 	},
 	 *  { //accept states
-	 *    {'c', "matched lower case"},
-	 *    {'d', "matched upper case"},
+	 *    {'c', 1},
+	 *    {'d', 2},
 	 *  }
 	 * };
 	 * This is squivalent to the regex: "a[a-zA-Z]", except the return of
 	 * 	Match will depend on whether the last character was in [a-z] or [A-Z]
+	 *
+	 * \todo Currently the AcceptanceNameType is required to have operator==
+	 * 	overloaded for this class to work. In future a comparator should be added.
 	 *
 	 * \param FailState The state Match should return if no match is found.
 	 * \param StateTransitionType The type of the data used as event input for
@@ -158,7 +161,7 @@ namespace FSM {
 			if(validState) {
 				for(auto cur : currentState) {
 					auto match = cur.first->Match(input, inputLength);
-					if(match.second == 0)
+					if(match.first != FailState)
 						continue;
 					for(auto s : cur.second) {
 						auto retVal = Match(
